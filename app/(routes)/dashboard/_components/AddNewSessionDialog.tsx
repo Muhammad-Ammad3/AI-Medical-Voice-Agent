@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -12,18 +12,39 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import axios from "axios";
+import DoctorAgentCard, { doctorAgent } from "./DoctorAgentCard";
+import SuggestedDoctorCard from "./SuggestedDoctorCard";
 
 function AddNewSessionDialog() {
   const [note, setNote] = useState<string>();
-  const [loading , setLoading] = useState(false);
-  const onClickNext =async () => {
+  const [loading, setLoading] = useState(false);
+  const [suggestedDoctor, setSuggestedDoctor] = useState<doctorAgent[]>();
+  const [selectedDoctor, setSelectedDoctor] = useState<doctorAgent>()
+  const onClickNext = async () => {
     setLoading(true);
     const result = await axios.post("/api/suggest-doctor", {
-      notes: note
+      notes: note,
+    });
+    console.log("result.data==>", result.data);
+    setSuggestedDoctor(result.data);
+    setLoading(false);
+  };
+
+  const onStartConsultation =async () => {
+    setLoading(true);
+    // save the selected doctoron database 
+    const result = await axios.post("/api/session-chat", {
+      notes: note,
+      selectedDoctor: selectedDoctor,
     })
-    console.log("result.data==>",result.data);
+    console.log("result.dataAddnew==>",result.data);
+    
+    if(result.data?.sessionId){
+      console.log("result.data==>sessionid",result.data.sessionId);
+      
+    }
     setLoading(false)
   }
 
@@ -36,23 +57,42 @@ function AddNewSessionDialog() {
         <DialogHeader>
           <DialogTitle>Add Basics Details</DialogTitle>
           <DialogDescription asChild>
-            <div>
-              <h2>Add Symptoms or Any Other Details</h2>
-              <Textarea
-                placeholder="Add Details here..."
-                className="h-[200px] mt-1"
-                onChange={(e) => setNote(e.target.value)}
-              />
-            </div>
+            {!suggestedDoctor ? (
+              <div>
+                <h2>Add Symptoms or Any Other Details</h2>
+                <Textarea
+                  placeholder="Add Details here..."
+                  className="h-[200px] mt-1"
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </div>
+            ) : (
+              <div>
+                <h2>Select the Doctor</h2>
+                <div className="grid grid-cols-2 gap-5">
+                  {/* suggested doctor  */}
+                  {suggestedDoctor?.map?.((doctor, index) => (
+                    <SuggestedDoctorCard doctorAgent={doctor} key={index} 
+                    setSelectedDoctor={() => setSelectedDoctor(doctor)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogClose>
             <Button variant={"outline"}>Cancel</Button>
           </DialogClose>
-          <Button disabled={!note} onClick={() => onClickNext()}>
-            Next <ArrowRight />
-          </Button>
+          {!suggestedDoctor ? (
+            <Button disabled={!note || loading} onClick={() => onClickNext()}>
+              Next{" "}
+              {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
+            </Button>
+          ) : (
+            <Button disabled={!note || loading} onClick={() => onStartConsultation()}>Start Consultation</Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

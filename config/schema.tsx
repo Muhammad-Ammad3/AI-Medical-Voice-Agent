@@ -9,11 +9,11 @@ export const usersTable = pgTable("users", {
 
 export const SessionChatTable = pgTable("sessionChatTable", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  sessionId: varchar({ length: 255 }).notNull(),
-  notes: text().notNull(),
-  conversation: json().default(null),
-  report: json().default(null),
-  createdBy: varchar({ length: 255 }).notNull(),
-  createdOn: varchar({ length: 255 }).notNull(),
+  sessionId: varchar().notNull(),
+  notes: text(),
+  conversation: json(),
+  report: json(),
+  createdBy: varchar().references(() => usersTable.email),
+  createdOn: varchar(),
   selectedDoctor: json().default(null)
 });
