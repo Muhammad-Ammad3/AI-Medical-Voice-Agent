@@ -19,7 +19,10 @@ export async function POST(req:NextRequest) {
     ],
   });
   const rawResponse = completion.choices[0].message
-  return NextResponse.json(rawResponse)
+  //@ts-ignore
+const Response = rawResponse.content.trim().replace("```json", "").replace("```", "");
+  const JSONResp = JSON.parse(Response);
+  return NextResponse.json(JSONResp)
 
     } catch (error) {
         return NextResponse.json(error)
