@@ -8,13 +8,13 @@ export type doctorAgent = {
   specialist: string;
   image: string;
   description: string;
-  agentPrompt: number;
+  agentPrompt: string;
 };
-type props = {
+type Props = {
   doctorAgent: doctorAgent;
-};
+};  
 
-function DoctorAgentCard({ doctorAgent }: props) {
+function DoctorAgentCard({ doctorAgent }: Props) {
   return (
     <div>
       <Image
