@@ -27,7 +27,6 @@ function AddNewSessionDialog() {
     const result = await axios.post("/api/suggest-doctor", {
       notes: note,
     });
-    // console.log("result.data==>", result.data);
     setSuggestedDoctor(result.data);
     setLoading(false);
   };
