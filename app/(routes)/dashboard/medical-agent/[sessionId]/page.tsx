@@ -52,8 +52,8 @@ function MedicalVoiceAgent() {
   //       {error && <p className="text-red-500">{error}</p>}
 
   return (
-    <div className="">
-      <div className="flex items-center justify-between">
+    <div className="p-5 border rounded-3xl bg-secondary">
+      <div className="flex justify-between items-center">
         <h2 className="p-1 px-2 border rounded-md flex gap-2 items-center">
           {" "}
           <Circle className="h-4 w-4" /> Not Connected
