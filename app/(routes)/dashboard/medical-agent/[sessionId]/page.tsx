@@ -3,8 +3,9 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import type { doctorAgent } from "../../_components/DoctorAgentCard";
-import { Circle } from "lucide-react";
+import { Circle, PhoneCall } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 type SessionDetail = {
   id: number;
@@ -47,40 +48,38 @@ function MedicalVoiceAgent() {
       setLoading(false);
     }
   };
+  // {loading && <p>Loading session...</p>}
+  //       {error && <p className="text-red-500">{error}</p>}
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="p-1 px-2 border rounded-md flex gap-2 items-center text-sm">
-          <Circle className="h-4 w-4 text-red-500" />
-          Not Connected
+    <div className="">
+      <div className="flex items-center justify-between">
+        <h2 className="p-1 px-2 border rounded-md flex gap-2 items-center">
+          {" "}
+          <Circle className="h-4 w-4" /> Not Connected
         </h2>
         <h2 className="font-bold text-xl text-gray-400">00:00</h2>
       </div>
-
-      {loading && <p>Loading session...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {sessionDetails && (
-        <div className="flex flex-col items-start gap-2">
+      {sessionDetails && 
+        <div className="flex flex-col items-center mt-10">
           <Image
-            src={sessionDetails.selectedDoctor.image}
-            alt={sessionDetails.selectedDoctor.specialist}
-            width={80}
-            height={80}
-            className="rounded-full"
+            src={sessionDetails?.selectedDoctor?.image}
+            alt={sessionDetails?.selectedDoctor?.specialist ?? ""}
+            height={120}
+            width={120}
+            className="h-[100px] w-[100px] object-cover rounded-full"
           />
-          <h2 className="font-semibold text-lg">
-            {sessionDetails.selectedDoctor.specialist}
+          <h2 className="mt-2 text-lg">
+            {sessionDetails?.selectedDoctor?.specialist}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            {sessionDetails.selectedDoctor.description}
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Symptoms/Notes: {sessionDetails.notes}
-          </p>
+          <p className="text-sm text-gray-400">AI Medical Voice Agent</p>
+          <div className="mt-32">
+            <h2 className="text-gray-400">Assistant Msg</h2>
+            <h2 className="text-lg">User Msg</h2>
+          </div>
+          <Button className="mt-20"> <PhoneCall /> Start Call</Button>
         </div>
-      )}
+      }
     </div>
   );
 }
