@@ -3,10 +3,10 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import type { doctorAgent } from "../../_components/DoctorAgentCard";
-import { Circle, PhoneCall } from "lucide-react";
+import { Circle, PhoneCall, PhoneOff } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import Vapi from '@vapi-ai/web';
+import Vapi from "@vapi-ai/web";
 
 type SessionDetail = {
   id: number;
@@ -52,19 +52,21 @@ function MedicalVoiceAgent() {
     }
   };
   const StartCall = () => {
-  vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
-  vapi.on('call-start', () => {console.log('Call started')
-    setCallStarted(true);
-  });
-vapi.on('call-end', () => {console.log('Call ended')
-  setCallStarted(false);
-});
-vapi.on('message', (message) => {
-  if (message.type === 'transcript') {
-    console.log(`${message.role}: ${message.transcript}`);
-  }
-});
-  }
+    vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+    vapi.on("call-start", () => {
+      console.log("Call started");
+      setCallStarted(true);
+    });
+    vapi.on("call-end", () => {
+      console.log("Call ended");
+      setCallStarted(false);
+    });
+    vapi.on("message", (message) => {
+      if (message.type === "transcript") {
+        console.log(`${message.role}: ${message.transcript}`);
+      }
+    });
+  };
   // {loading && <p>Loading session...</p>}
   //       {error && <p className="text-red-500">{error}</p>}
 
@@ -73,11 +75,11 @@ vapi.on('message', (message) => {
       <div className="flex justify-between items-center">
         <h2 className="p-1 px-2 border rounded-md flex gap-2 items-center">
           {" "}
-          <Circle className="h-4 w-4" /> Not Connected
+          <Circle className=  {`h-4 w-4 rounded-full ${callStarted ? "bg-green-500" : "bg-red-500"}`} />{callStarted? "Connected..." : "Not Connected" }
         </h2>
         <h2 className="font-bold text-xl text-gray-400">00:00</h2>
       </div>
-      {sessionDetails && 
+      {sessionDetails && (
         <div className="flex flex-col items-center mt-10">
           <Image
             src={sessionDetails?.selectedDoctor?.image}
@@ -94,9 +96,16 @@ vapi.on('message', (message) => {
             <h2 className="text-gray-400">Assistant Msg</h2>
             <h2 className="text-lg">User Msg</h2>
           </div>
-          <Button className="mt-20"> <PhoneCall /> Start Call</Button>
+         {!callStarted ? <Button className="mt-20" onClick={StartCall}>
+            {" "}
+            <PhoneCall /> Start Call
+          </Button> : 
+          <Button variant="destructive">
+            <PhoneOff /> Disconnect
+          </Button>
+          }
         </div>
-      }
+      )}
     </div>
   );
 }
