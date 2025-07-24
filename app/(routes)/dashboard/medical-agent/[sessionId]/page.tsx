@@ -6,6 +6,7 @@ import type { doctorAgent } from "../../_components/DoctorAgentCard";
 import { Circle, PhoneCall } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Vapi from '@vapi-ai/web';
 
 type SessionDetail = {
   id: number;
@@ -22,6 +23,8 @@ function MedicalVoiceAgent() {
   const [sessionDetails, setSessionDetails] = useState<SessionDetail | null>(
     null
   );
+  const [callStarted, setCallStarted] = useState(false);
+  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +51,20 @@ function MedicalVoiceAgent() {
       setLoading(false);
     }
   };
+  const StartCall = () => {
+  vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+  vapi.on('call-start', () => {console.log('Call started')
+    setCallStarted(true);
+  });
+vapi.on('call-end', () => {console.log('Call ended')
+  setCallStarted(false);
+});
+vapi.on('message', (message) => {
+  if (message.type === 'transcript') {
+    console.log(`${message.role}: ${message.transcript}`);
+  }
+});
+  }
   // {loading && <p>Loading session...</p>}
   //       {error && <p className="text-red-500">{error}</p>}
 
