@@ -24,7 +24,8 @@ function MedicalVoiceAgent() {
     null
   );
   const [callStarted, setCallStarted] = useState(false);
-  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+  const [vapiInstance, setVapiInstance] = useState<any>();
+  const [currentRoll, setCurrentRoll] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +53,8 @@ function MedicalVoiceAgent() {
     }
   };
   const StartCall = () => {
+  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+  setVapiInstance(vapi);
     vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
     vapi.on("call-start", () => {
       console.log("Call started");
@@ -63,10 +66,32 @@ function MedicalVoiceAgent() {
     });
     vapi.on("message", (message) => {
       if (message.type === "transcript") {
+        const {role , transcript , transcriptType} = message;
         console.log(`${message.role}: ${message.transcript}`);
       }
     });
+    
+    vapiInstance.on('speech-start', () => {
+      console.log('Assistant started speaking');
+      setCurrentRoll("assistant");
+    });
+    vapiInstance.on('speech-end', () => {
+      console.log('Assistant stopped speaking');
+      setCurrentRoll("user");
+    });
   };
+  const endCall = () => {
+    if (!vapiInstance) return;
+    vapiInstance.stop();
+
+    vapiInstance.off("call-start");
+    vapiInstance.off("call-end");
+    vapiInstance.off("message");
+    setCallStarted(false);
+    setVapiInstance(null);
+
+     
+  }
   // {loading && <p>Loading session...</p>}
   //       {error && <p className="text-red-500">{error}</p>}
 
@@ -75,7 +100,12 @@ function MedicalVoiceAgent() {
       <div className="flex justify-between items-center">
         <h2 className="p-1 px-2 border rounded-md flex gap-2 items-center">
           {" "}
-          <Circle className=  {`h-4 w-4 rounded-full ${callStarted ? "bg-green-500" : "bg-red-500"}`} />{callStarted? "Connected..." : "Not Connected" }
+          <Circle
+            className={`h-4 w-4 rounded-full ${
+              callStarted ? "bg-green-500" : "bg-red-500"
+            }`}
+          />
+          {callStarted ? "Connected..." : "Not Connected"}
         </h2>
         <h2 className="font-bold text-xl text-gray-400">00:00</h2>
       </div>
@@ -96,14 +126,16 @@ function MedicalVoiceAgent() {
             <h2 className="text-gray-400">Assistant Msg</h2>
             <h2 className="text-lg">User Msg</h2>
           </div>
-         {!callStarted ? <Button className="mt-20" onClick={StartCall}>
-            {" "}
-            <PhoneCall /> Start Call
-          </Button> : 
-          <Button variant="destructive">
-            <PhoneOff /> Disconnect
-          </Button>
-          }
+          {!callStarted ? (
+            <Button className="mt-20" onClick={StartCall}>
+              {" "}
+              <PhoneCall /> Start Call
+            </Button>
+          ) : (
+            <Button variant="destructive" onClick={endCall}>
+              <PhoneOff /> Disconnect
+            </Button>
+          )}
         </div>
       )}
     </div>
