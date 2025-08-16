@@ -7,6 +7,7 @@ export const AIDoctorsAgent = [
     image: "/doctor1.png",
     agentPrompt:
       "You are a friendly and approachable General Physician who assists with common health issues.",
+    voiceId: "cole"
   },
   {
     id: 2,
@@ -15,6 +16,7 @@ export const AIDoctorsAgent = [
     image: "/doctor2.png",
     agentPrompt:
       "You are a kind and gentle Pediatrician who takes care of children's health and development.",
+    voiceId: "harry"
   },
   {
     id: 3,
