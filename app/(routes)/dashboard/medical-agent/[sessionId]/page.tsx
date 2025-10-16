@@ -272,11 +272,11 @@ function MedicalVoiceAgent() {
       },
       voice: {
         provider: "vapi",
-        voiceId: sessionDetails?.selectedDoctor?.voiceId || "any", // fallback
+        voiceId: sessionDetails?.selectedDoctor?.voiceId || "any", 
       },
       model: {
         provider: "openai",
-        model: "gpt-4o-mini", // ✅ correct model
+        model: "gpt-4o", 
         messages: [
           {
             role: "system",
