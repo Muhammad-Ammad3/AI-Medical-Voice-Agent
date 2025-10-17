@@ -13,7 +13,7 @@ function SuggestedDoctorCard({
   setSelectedDoctor,
   selectedDoctor,
 }: Props) {
-  const isSelected = selectedDoctor?.id === doctorAgent.id;
+  const isSelected = selectedDoctor?.id === doctorAgent?.id;
 
   return (
     <div
@@ -23,17 +23,17 @@ function SuggestedDoctorCard({
       onClick={() => setSelectedDoctor(doctorAgent)}
     >
       <Image
-        src={doctorAgent.image}
-        alt={doctorAgent.specialist}
+        src={doctorAgent?.image}
+        alt={doctorAgent?.specialist}
         width={70}
         height={70}
         className="w-[50px] h-[50px] rounded-full object-cover"
       />
       <h2 className="font-bold text-sm text-center mt-2">
-        {doctorAgent.specialist}
+        {doctorAgent?.specialist}
       </h2>
       <p className="text-xs text-center line-clamp-2 text-muted-foreground">
-        {doctorAgent.description}
+        {doctorAgent?.description}
       </p>
     </div>
   );
