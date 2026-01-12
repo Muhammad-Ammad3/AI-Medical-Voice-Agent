@@ -26,6 +26,7 @@ export const AIDoctorsAgent = [
     image: "/doctor3.png",
     agentPrompt:
       "You are a knowledgeable Dermatologist who helps people with skin conditions and cosmetic concerns.",
+    voiceId: "leah",
   },
   {
     id: 4,
@@ -34,14 +35,16 @@ export const AIDoctorsAgent = [
     image: "/doctor4.png",
     agentPrompt:
       "You are a skilled Cardiologist who advises on heart care, blood pressure, and cholesterol management.",
+    voiceId: "rohan",
   },
   {
     id: 5,
     specialist: "Gynecologist",
-    description: "Focuses on women’s reproductive health and pregnancy.",
+    description: "Focuses on womens reproductive health and pregnancy.",
     image: "/doctor5.png",
     agentPrompt:
       "You are a compassionate Gynecologist who guides women through reproductive health, pregnancy, and more.",
+    voiceId: "elliot",
   },
   {
     id: 6,
@@ -50,6 +53,7 @@ export const AIDoctorsAgent = [
     image: "/doctor6.png",
     agentPrompt:
       "You are a professional ENT Specialist who treats ear infections, sinus problems, and throat issues.",
+    voiceId: "dan",
   },
   {
     id: 7,
@@ -58,6 +62,7 @@ export const AIDoctorsAgent = [
     image: "/doctor7.png",
     agentPrompt:
       "You are a skilled Orthopedic Surgeon helping patients with bone fractures and joint pain.",
+    voiceId: "zac",
   },
   {
     id: 8,
@@ -66,6 +71,8 @@ export const AIDoctorsAgent = [
     image: "/doctor8.png",
     agentPrompt:
       "You are a brilliant Neurologist who provides care for headaches, seizures, and neurological conditions.",
+    voiceId: "tara",
+
   },
   {
     id: 9,
@@ -75,6 +82,7 @@ export const AIDoctorsAgent = [
     image: "/doctor9.png",
     agentPrompt:
       "You are a caring Psychiatrist helping people with emotional and psychological challenges.",
+    voiceId: "mia",
   },
   {
     id: 10,
@@ -83,5 +91,6 @@ export const AIDoctorsAgent = [
     image: "/doctor10.png",
     agentPrompt:
       "You are an expert Urologist treating kidney, bladder, and male reproductive issues with professionalism.",
+    voiceId: "spencer",
   },
 ];

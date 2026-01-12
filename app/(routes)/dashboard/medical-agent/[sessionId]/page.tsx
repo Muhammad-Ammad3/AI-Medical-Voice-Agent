@@ -202,11 +202,14 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import type { doctorAgent } from "../../_components/DoctorAgentCard";
-import { Circle, PhoneCall, PhoneOff } from "lucide-react";
+import { Circle, Loader, PhoneCall, PhoneOff } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Vapi from "@vapi-ai/web";
 import Provider from "@/app/provider";
+import { Messages } from "openai/resources/chat/completions.mjs";
+import { useRouter } from "next/router";
+import { toast } from "sonner";
 
 type SessionDetail = {
   id: number;
@@ -230,6 +233,8 @@ function MedicalVoiceAgent() {
   const [currentRole, setCurrentRole] = useState<string | null>();
   const [liveTranscript, setLiveTranscript] = useState<string>();
   const [message, setMessage] = useState<messages[]>([]);
+  const [loading, setLoading] = useState(false);
+  // const router = useRouter();
 
 
   useEffect(() => {
@@ -237,7 +242,7 @@ function MedicalVoiceAgent() {
   },[sessionId]);
 
   const GetSessionDetails = async () => {
-    const result = await axios.get("/api/session-chat?sessionId="+sessionId);
+    const result =await axios.get("/api/session-chat?sessionId="+sessionId);
     console.log("session details =>", result.data);
     setSessionDetails(result.data);
   }
@@ -245,7 +250,32 @@ function MedicalVoiceAgent() {
   const StartCall = () => {
   const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
   setVapiInstance(vapi);
-  vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID!);
+
+  const VapiAgentConfig = {
+    name: "AI Medical Doctor Voice Agent",
+    firstMessage:
+      "Hi there! I'm your AI Medical Assistant. I'm here to help you with any health questions or concern your might have today. How are you feeling?",
+    transcriber: {
+      Provider: "assembly-ai",
+      language: "en",
+  },
+    voice: {
+      provider: "vapi",
+      voiceId: sessionDetails?.selectedDoctor?.voiceId,
+},
+  model: {
+    provider: "openai",
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: sessionDetails?.selectedDoctor?.agentPrompt,
+  }]
+}
+
+}
+
+  vapi.start({VapiAgentConfig});
   vapi.on('call-start', () => {console.log('Call started')
     setCallStarted(true);
   });
@@ -266,8 +296,7 @@ vapi.on('message', (message) => {
       setCurrentRole(null);
     }
   }
-});
- vapiInstance.on('speech-start', () => {
+   vapiInstance.on('speech-start', () => {
       console.log('Assistant started speaking');
       setCurrentRole("assistant");
     });
@@ -275,8 +304,11 @@ vapi.on('message', (message) => {
       console.log('Assistant stopped speaking');
       setCurrentRole("user");
     });
+});
+
   }
-    const endCall = () => {
+    const endCall = async() => {
+      setLoading(true);
     if (!vapiInstance) return;
       vapiInstance.stop();
       vapiInstance.off('call-start');
@@ -284,8 +316,22 @@ vapi.on('message', (message) => {
       vapiInstance.off('message');
       setCallStarted(false);
       setVapiInstance(null);
+      const result = await GenerateReport();
+      setLoading(false);
+      toast.success("Your report is generated!");
+      // router.replace("/dashboard")
     
   };
+
+  const GenerateReport = async () => {
+    const result = await axios.post("/api/medical-report", { 
+      messages: message,
+      sessionDetails: sessionDetails,
+      sessionId: sessionId
+    });
+    console.log("report generated =>", result.data);
+    return result.data;
+  }
 
 
   return (
@@ -329,13 +375,14 @@ vapi.on('message', (message) => {
             )}
           </div>
           {!callStarted ? (
-            <Button className="mt-20" onClick={StartCall}>
-              {" "}
-              <PhoneCall /> Start Call
+            <Button className="mt-20" onClick={StartCall} disabled={loading}>
+              {loading ? <Loader className="animate-apin"/> : <PhoneCall />}
+               Start Call
             </Button>
           ) : (
-            <Button variant="destructive" onClick={endCall}>
-              <PhoneOff /> Disconnect
+            <Button variant="destructive" onClick={endCall} disabled={loading}>
+               {loading ? <Loader className="animate-apin"/> : <PhoneOff /> }
+              Disconnect
             </Button>
           )}
         </div>
